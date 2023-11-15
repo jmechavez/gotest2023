@@ -1,0 +1,3 @@
+- must install golang in vscode //done
+- must run "Hello World //done
+- must commit in Github //done
