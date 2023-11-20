@@ -4,15 +4,23 @@ import (
 	"bufio"
 	"encoding/csv"
 	"fmt"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
+
+	api "github.com/jmechavez/gotest2023/handlers"
 
 	players "github.com/jmechavez/gotest2023/db"
 )
 
 func main() {
-	fmt.Println("Hello Player")
+
+	//define routes
+	http.HandleFunc("/greet", api.GreetHandler)
+	http.HandleFunc("/players", api.GetAllPlayers)
+	//starting server
+	http.ListenAndServe("localhost:8000", nil)
 
 	reader := bufio.NewReader(os.Stdin)
 

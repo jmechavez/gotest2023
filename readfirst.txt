@@ -3,4 +3,5 @@
 - must commit in Github //done
 - create a struct //done
 - create in separate folder make a database 
-- 
+- create a simple rest API
+- marshalling daa structures to JSON/XML
