@@ -1,8 +1,15 @@
 // players/player.go
-package players
+package db
+
+import "github.com/google/uuid"
 
 type Player struct {
-	Name string `json:"full_name" xml:"name"`
-	Age  int    `json:"age" xml:"age"`
-	Game string `json:"game" xnk:"game"`
+	Id   uuid.UUID `json:"id" xml: xml:"id"`
+	Name string    `json:"full_name" xml:"name"`
+	Age  int       `json:"age" xml:"age"`
+	Game string    `json:"game" xnk:"game"`
+}
+
+type PlayerRepository interface {
+	FindAll() ([]Player, error)
 }
