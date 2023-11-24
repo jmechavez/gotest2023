@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/jmechavez/gotest2023/db"
+	"github.com/jmechavez/gotest2023/domain"
 	"github.com/jmechavez/gotest2023/service"
 )
 
@@ -15,7 +15,8 @@ func Start() {
 	router := mux.NewRouter()
 
 	//wiring
-	ph := PlayerHandlers{service.NewPlayerService(db.NewPlayerRepositoryStub())}
+	//ph := PlayerHandlers{service.NewPlayerService(domain.NewPlayerRepositoryStub())}
+	ph := PlayerHandlers{service.NewPlayerService(domain.NewPlayerRepositoryDb())}
 
 	// define routes
 	router.HandleFunc("/greet", GreetHandler).Methods(http.MethodGet)

@@ -1,6 +1,4 @@
-package db
-
-import "github.com/google/uuid"
+package domain
 
 type PlayerRepositoryStub struct {
 	players []Player
@@ -12,8 +10,8 @@ func (s PlayerRepositoryStub) FindAll() ([]Player, error) {
 
 func NewPlayerRepositoryStub() PlayerRepositoryStub {
 	players := []Player{
-		{Id: uuid.New(), Name: "John", Age: 21, Game: "Basketball"},
-		{Id: uuid.New(), Name: "Michael", Age: 22, Game: "Volleyball"},
+		{Id: "2005", Name: "John", Age: 21, Game: "Basketball", Status: "1"},
+		{Id: "2004", Name: "Michael", Age: 22, Game: "Volleyball", Status: "1"},
 	}
 	return PlayerRepositoryStub{players}
 }
