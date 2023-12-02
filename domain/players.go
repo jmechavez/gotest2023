@@ -2,7 +2,7 @@
 package domain
 
 type Player struct {
-	Id     string `json:"player_id" xml: xml:"id"`
+	Id     string `json:"player_id" xml:"id"`
 	Name   string `json:"full_name" xml:"name"`
 	Age    int    `json:"age" xml:"age"`
 	Game   string `json:"game" xml:"game"`
@@ -11,4 +11,5 @@ type Player struct {
 
 type PlayerRepository interface {
 	FindAll() ([]Player, error)
+	ById(string) (*Player, error)
 }

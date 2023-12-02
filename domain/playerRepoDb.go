@@ -12,6 +12,11 @@ type PlayerRepositoryDB struct {
 	client *sql.DB
 }
 
+// ById implements PlayerRepository.
+//func (*PlayerRepositoryDB) ById(string) (*Player, error) {
+//	panic("unimplemented")
+//}
+
 func (d *PlayerRepositoryDB) FindAll() ([]Player, error) {
 
 	findAllSql := "select player_id,name,age,game,status from players"
@@ -36,6 +41,25 @@ func (d *PlayerRepositoryDB) FindAll() ([]Player, error) {
 	return players, nil
 }
 
+func (d PlayerRepositoryDB) ById(id string) (*Player, error) {
+	playerSql := "select player_id, name, age, game, status from players where player_id = ?"
+	row := d.client.QueryRow(playerSql, id)
+
+	var p Player
+	err := row.Scan(&p.Id, &p.Name, &p.Age, &p.Game, &p.Status)
+
+	if err == sql.ErrNoRows {
+		log.Println("No rows found for player with ID:", id)
+		return nil, nil // Return nil for both player and error
+	} else if err != nil {
+		log.Println("Error while scanning:", err.Error())
+		return nil, err
+	}
+
+	return &p, nil
+}
+
+// ! connect to mySQL database
 func NewPlayerRepositoryDb() *PlayerRepositoryDB {
 	client, err := sql.Open("mysql", "root:3@tcp(localhost:33061)/gotest2023")
 	if err != nil {
