@@ -1,11 +1,16 @@
+//database adapter
+
 package domain
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
+	"os"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/joho/godotenv"
 )
 
 type PlayerRepositoryDB struct {
@@ -13,15 +18,17 @@ type PlayerRepositoryDB struct {
 }
 
 // ById implements PlayerRepository.
-//func (*PlayerRepositoryDB) ById(string) (*Player, error) {
-//	panic("unimplemented")
-//}
-
+//
+//	func (*PlayerRepositoryDB) ById(string) (*Player, error) {
+//		panic("unimplemented")
+//	}
+//
+// * Find all players
 func (d *PlayerRepositoryDB) FindAll() ([]Player, error) {
 
-	findAllSql := "select player_id,name,age,game,status from players"
+	findAllSql := "select player_id,name,age,game,status from players" //check all players in SQLdatabase
+	rows, err := d.client.Query(findAllSql)                            //send querry to the database
 
-	rows, err := d.client.Query(findAllSql)
 	if err != nil {
 		log.Println("Error while querying player table" + err.Error())
 		return nil, err
@@ -41,15 +48,16 @@ func (d *PlayerRepositoryDB) FindAll() ([]Player, error) {
 	return players, nil
 }
 
+// * Find Players by ID
 func (d PlayerRepositoryDB) ById(id string) (*Player, error) {
-	playerSql := "select player_id, name, age, game, status from players where player_id = ?"
-	row := d.client.QueryRow(playerSql, id)
+	playerSql := "select player_id, name, age, game, status from players where player_id = ?" //check all players table in SQLdatabase
+	row := d.client.QueryRow(playerSql, id)                                                   //send querryrow to the database
 
 	var p Player
 	err := row.Scan(&p.Id, &p.Name, &p.Age, &p.Game, &p.Status)
 
 	if err == sql.ErrNoRows {
-		log.Println("No rows found for player with ID:", id)
+		log.Println("No rows found for players with ID:", id)
 		return nil, nil // Return nil for both player and error
 	} else if err != nil {
 		log.Println("Error while scanning:", err.Error())
@@ -59,15 +67,30 @@ func (d PlayerRepositoryDB) ById(id string) (*Player, error) {
 	return &p, nil
 }
 
-// ! connect to mySQL database
+// ! connect to mySQL database with godotenv file
 func NewPlayerRepositoryDb() *PlayerRepositoryDB {
-	client, err := sql.Open("mysql", "root:3@tcp(localhost:33061)/gotest2023")
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	dbUser := os.Getenv("DB_USER")
+	dbPassword := os.Getenv("DB_PASSWORD")
+	dbHost := os.Getenv("DB_HOST")
+	dbPort := os.Getenv("DB_PORT")
+	dbName := os.Getenv("DB_NAME")
+
+	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUser, dbPassword, dbHost, dbPort, dbName)
+
+	client, err := sql.Open("mysql", dataSourceName)
 	if err != nil {
 		panic(err)
 	}
-	// See "Important settings" section.
+
+	// Set connection pool settings.
 	client.SetConnMaxLifetime(time.Minute * 3)
 	client.SetMaxOpenConns(10)
 	client.SetMaxIdleConns(10)
+
 	return &PlayerRepositoryDB{client}
 }

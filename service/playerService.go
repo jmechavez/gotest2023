@@ -1,10 +1,12 @@
+//service interfaces - Business side / domain
+
 package service
 
 import "github.com/jmechavez/gotest2023/domain"
 
 type PlayerService interface {
-	GetAllPlayer() ([]domain.Player, error)
-	GetPlayer(string) (*domain.Player, error)
+	GetAllPlayer() ([]domain.Player, error)   //create method  get all players
+	GetPlayer(string) (*domain.Player, error) //create method get alll player id only
 }
 
 type DefaultPlayerService struct {
