@@ -10,6 +10,7 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/jmechavez/gotest2023/errorCust"
 	"github.com/joho/godotenv"
 )
 
@@ -49,7 +50,7 @@ func (d *PlayerRepositoryDB) FindAll() ([]Player, error) {
 }
 
 // * Find Players by ID
-func (d PlayerRepositoryDB) ById(id string) (*Player, error) {
+func (d PlayerRepositoryDB) ById(id string) (*Player, *errorCust.AppError) {
 	playerSql := "select player_id, name, age, game, status from players where player_id = ?" //check all players table in SQLdatabase
 	row := d.client.QueryRow(playerSql, id)                                                   //send querryrow to the database
 
@@ -58,12 +59,11 @@ func (d PlayerRepositoryDB) ById(id string) (*Player, error) {
 
 	if err == sql.ErrNoRows {
 		log.Println("No rows found for players with ID:", id)
-		return nil, nil // Return nil for both player and error
+		return nil, errorCust.NewNotFoundError("Player not found")
 	} else if err != nil {
 		log.Println("Error while scanning:", err.Error())
-		return nil, err
+		return nil, errorCust.NewUnexpectedError("Unexpected Error")
 	}
-
 	return &p, nil
 }
 

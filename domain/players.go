@@ -1,6 +1,8 @@
 // players/player.go
 package domain
 
+import "github.com/jmechavez/gotest2023/errorCust"
+
 type Player struct {
 	Id     string `json:"player_id" xml:"id"`
 	Name   string `json:"full_name" xml:"name"`
@@ -10,6 +12,6 @@ type Player struct {
 }
 
 type PlayerRepository interface {
-	FindAll() ([]Player, error)   //retreive all players
-	ById(string) (*Player, error) //retrieve player_id only
+	FindAll() ([]Player, error)                 //retreive all players
+	ById(string) (*Player, *errorCust.AppError) //retrieve player_id only
 }

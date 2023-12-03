@@ -42,8 +42,8 @@ func (ph *PlayerHandlers) GetPlayer(w http.ResponseWriter, r *http.Request) {
 
 	player, err := ph.service.GetPlayer(id)
 	if err != nil {
-		w.WriteHeader(http.StatusNotFound)
-		fmt.Fprintf(w, err.Error())
+		w.WriteHeader(err.Code)
+		fmt.Fprintf(w, err.Message)
 	} else {
 		w.Header().Add("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(player)

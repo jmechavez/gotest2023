@@ -2,11 +2,14 @@
 
 package service
 
-import "github.com/jmechavez/gotest2023/domain"
+import (
+	"github.com/jmechavez/gotest2023/domain"
+	"github.com/jmechavez/gotest2023/errorCust"
+)
 
 type PlayerService interface {
-	GetAllPlayer() ([]domain.Player, error)   //create method  get all players
-	GetPlayer(string) (*domain.Player, error) //create method get alll player id only
+	GetAllPlayer() ([]domain.Player, error)                 //create method  get all players
+	GetPlayer(string) (*domain.Player, *errorCust.AppError) //create method get alll player id only
 }
 
 type DefaultPlayerService struct {
@@ -17,7 +20,7 @@ func (s DefaultPlayerService) GetAllPlayer() ([]domain.Player, error) {
 	return s.repo.FindAll()
 }
 
-func (s DefaultPlayerService) GetPlayer(id string) (*domain.Player, error) {
+func (s DefaultPlayerService) GetPlayer(id string) (*domain.Player, *errorCust.AppError) {
 	return s.repo.ById(id)
 }
 
