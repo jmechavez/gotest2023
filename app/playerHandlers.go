@@ -36,16 +36,32 @@ func (ph *PlayerHandlers) GetAllPlayers(w http.ResponseWriter, r *http.Request) 
 		json.NewEncoder(w).Encode(players)
 	}
 }
+
 func (ph *PlayerHandlers) GetPlayer(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["player_id"]
 
 	player, err := ph.service.GetPlayer(id)
 	if err != nil {
-		w.WriteHeader(err.Code)
-		fmt.Fprintf(w, err.Message)
+		// w.WriteHeader(err.Code)
+		// fmt.Fprintf(w, err.Message)
+		// w.Header().Add("Content-Type", "application/json")
+		// w.WriteHeader(err.Code)
+		// json.NewEncoder(w).Encode(err.AsMessage())
+
+		writeResponse(w, err.Code, err.AsMessage())
 	} else {
-		w.Header().Add("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(player)
+		writeResponse(w, http.StatusOK, player)
+		// w.Header().Add("Content-Type", "application/json")
+		// w.WriteHeader(http.StatusOK)
+		// json.NewEncoder(w).Encode(player)
+	}
+}
+
+func writeResponse(w http.ResponseWriter, code int, data interface{}) {
+	w.Header().Add("Content-Type", "application/json")
+	w.WriteHeader(code)
+	if err := json.NewEncoder(w).Encode(data); err != nil {
+		panic(err)
 	}
 }
