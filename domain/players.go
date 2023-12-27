@@ -12,6 +12,6 @@ type Player struct {
 }
 
 type PlayerRepository interface {
-	FindAll() ([]Player, error)                 //retreive all players
+	FindAll() ([]Player, *errorCust.AppError)   //retreive all players
 	ById(string) (*Player, *errorCust.AppError) //retrieve player_id only
 }

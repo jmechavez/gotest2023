@@ -11,6 +11,7 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmechavez/gotest2023/errorCust"
+	"github.com/jmechavez/gotest2023/logger"
 	"github.com/joho/godotenv"
 )
 
@@ -25,14 +26,14 @@ type PlayerRepositoryDB struct {
 //	}
 //
 // * Find all players
-func (d *PlayerRepositoryDB) FindAll() ([]Player, error) {
+func (d *PlayerRepositoryDB) FindAll() ([]Player, *errorCust.AppError) {
 
 	findAllSql := "select player_id,name,age,game,status from players" //check all players in SQLdatabase
 	rows, err := d.client.Query(findAllSql)                            //send querry to the database
 
 	if err != nil {
 		log.Println("Error while querying player table" + err.Error())
-		return nil, err
+		return nil, errorCust.NewNotFoundError("Unexpected database error")
 	}
 
 	players := make([]Player, 0)
@@ -40,8 +41,8 @@ func (d *PlayerRepositoryDB) FindAll() ([]Player, error) {
 		var p Player
 		err := rows.Scan(&p.Id, &p.Name, &p.Age, &p.Game, &p.Status)
 		if err != nil {
-			log.Println("Error while scanning players table" + err.Error())
-			return nil, err
+			logger.Error("Error while scanning players table" + err.Error())
+			return nil, errorCust.NewNotFoundError("Unexpected database error")
 		}
 		players = append(players, p)
 	}

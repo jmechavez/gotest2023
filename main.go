@@ -2,10 +2,12 @@ package main
 
 import (
 	app "github.com/jmechavez/gotest2023/app"
+	"github.com/jmechavez/gotest2023/logger"
 )
 
 func main() {
 
+	logger.Info("Starting the application....")
 	app.Start()
 
 	// reader := bufio.NewReader(os.Stdin)

@@ -8,7 +8,7 @@ import (
 )
 
 type PlayerService interface {
-	GetAllPlayer() ([]domain.Player, error)                 //create method  get all players
+	GetAllPlayer() ([]domain.Player, *errorCust.AppError)   //create method  get all players
 	GetPlayer(string) (*domain.Player, *errorCust.AppError) //create method get alll player id only
 }
 
@@ -16,7 +16,7 @@ type DefaultPlayerService struct {
 	repo domain.PlayerRepository
 }
 
-func (s DefaultPlayerService) GetAllPlayer() ([]domain.Player, error) {
+func (s DefaultPlayerService) GetAllPlayer() ([]domain.Player, *errorCust.AppError) {
 	return s.repo.FindAll()
 }
 
