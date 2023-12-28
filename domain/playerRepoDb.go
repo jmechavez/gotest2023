@@ -12,11 +12,12 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmechavez/gotest2023/errorCust"
 	"github.com/jmechavez/gotest2023/logger"
+	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
 )
 
 type PlayerRepositoryDB struct {
-	client *sql.DB
+	client *sqlx.DB
 }
 
 // ById implements PlayerRepository.
@@ -32,31 +33,40 @@ func (d *PlayerRepositoryDB) FindAll() ([]Player, *errorCust.AppError) {
 	rows, err := d.client.Query(findAllSql)                            //send querry to the database
 
 	if err != nil {
-		log.Println("Error while querying player table" + err.Error())
+		logger.Error("Error while querying player table" + err.Error())
 		return nil, errorCust.NewNotFoundError("Unexpected database error")
 	}
 
+	defer rows.Close()
+
 	players := make([]Player, 0)
-	for rows.Next() {
-		var p Player
-		err := rows.Scan(&p.Id, &p.Name, &p.Age, &p.Game, &p.Status)
-		if err != nil {
-			logger.Error("Error while scanning players table" + err.Error())
-			return nil, errorCust.NewNotFoundError("Unexpected database error")
-		}
-		players = append(players, p)
+	err = sqlx.StructScan(rows, &players)
+	if err != nil {
+		logger.Error("Error while scanning players table" + err.Error())
+		return nil, errorCust.NewNotFoundError("Unexpected database error")
 	}
+
+	// for rows.Next() {
+	// 	var p Player
+	// 	err := rows.Scan(&p.Id, &p.Name, &p.Age, &p.Game, &p.Status)
+	// 	if err != nil {
+	// 		logger.Error("Error while scanning players table" + err.Error())
+	// 		return nil, errorCust.NewNotFoundError("Unexpected database error")
+	// 	}
+	// 	players = append(players, p)
+	// }
 
 	return players, nil
 }
 
-// * Find Players by ID
+// FindAll retrieves all players from the database.
 func (d PlayerRepositoryDB) ById(id string) (*Player, *errorCust.AppError) {
 	playerSql := "select player_id, name, age, game, status from players where player_id = ?" //check all players table in SQLdatabase
-	row := d.client.QueryRow(playerSql, id)                                                   //send querryrow to the database
+	//row := d.client.QueryRow(playerSql, id)                                                   //send querryrow to the database
 
 	var p Player
-	err := row.Scan(&p.Id, &p.Name, &p.Age, &p.Game, &p.Status)
+	err := d.client.Get(&p, playerSql, id)
+	//err := row.Scan(&p.Id, &p.Name, &p.Age, &p.Game, &p.Status)
 
 	if err == sql.ErrNoRows {
 		log.Println("No rows found for players with ID:", id)
@@ -83,9 +93,11 @@ func NewPlayerRepositoryDb() *PlayerRepositoryDB {
 
 	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUser, dbPassword, dbHost, dbPort, dbName)
 
-	client, err := sql.Open("mysql", dataSourceName)
+	client, err := sqlx.Open("mysql", dataSourceName)
 	if err != nil {
-		panic(err)
+		log.Fatal("Error connecting to the database: ", err.Error())
+		return nil
+
 	}
 
 	// Set connection pool settings.
