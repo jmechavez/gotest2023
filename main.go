@@ -6,8 +6,10 @@ import (
 )
 
 func main() {
-
+	// Log an informational message indicating the start of the application
 	logger.Info("Starting the application....")
+
+	// Call the Start function from the app package to initiate the application
 	app.Start()
 
 	// reader := bufio.NewReader(os.Stdin)

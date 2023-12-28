@@ -7,23 +7,28 @@ import (
 	"github.com/jmechavez/gotest2023/errorCust"
 )
 
+// PlayerService defines the interface for interacting with player data.
 type PlayerService interface {
-	GetAllPlayer() ([]domain.Player, *errorCust.AppError)   //create method  get all players
-	GetPlayer(string) (*domain.Player, *errorCust.AppError) //create method get alll player id only
+	GetAllPlayers() ([]domain.Player, *errorCust.AppError)      // Get all players
+	GetPlayerByID(string) (*domain.Player, *errorCust.AppError) // Get a player by ID
 }
 
+// DefaultPlayerService is the default implementation of the PlayerService interface.
 type DefaultPlayerService struct {
 	repo domain.PlayerRepository
 }
 
-func (s DefaultPlayerService) GetAllPlayer() ([]domain.Player, *errorCust.AppError) {
+// GetAllPlayers retrieves all players.
+func (s DefaultPlayerService) GetAllPlayers() ([]domain.Player, *errorCust.AppError) {
 	return s.repo.FindAll()
 }
 
-func (s DefaultPlayerService) GetPlayer(id string) (*domain.Player, *errorCust.AppError) {
+// GetPlayerByID retrieves a player by their ID.
+func (s DefaultPlayerService) GetPlayerByID(id string) (*domain.Player, *errorCust.AppError) {
 	return s.repo.ById(id)
 }
 
+// NewPlayerService creates a new instance of DefaultPlayerService.
 func NewPlayerService(repository domain.PlayerRepository) DefaultPlayerService {
 	return DefaultPlayerService{repository}
 }

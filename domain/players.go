@@ -3,6 +3,7 @@ package domain
 
 import "github.com/jmechavez/gotest2023/errorCust"
 
+// Player represents a player in the system.
 type Player struct {
 	Id     string `json:"player_id" xml:"id" db:"player_id"`
 	Name   string `json:"full_name" xml:"name"`
@@ -11,7 +12,8 @@ type Player struct {
 	Status string `json:"status" xml:"status"`
 }
 
+// PlayerRepository defines the interface for interacting with player data.
 type PlayerRepository interface {
-	FindAll() ([]Player, *errorCust.AppError)   //retreive all players
-	ById(string) (*Player, *errorCust.AppError) //retrieve player_id only
+	FindAll() ([]Player, *errorCust.AppError)   // Retrieve all players
+	ById(string) (*Player, *errorCust.AppError) // Retrieve a player by ID
 }

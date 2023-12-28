@@ -38,7 +38,7 @@ func (ph *PlayerHandlers) GetAllPlayers(w http.ResponseWriter, r *http.Request) 
 	// playerTest := []players.Player{
 	// 	{Id: uuid.New(), Name: "John", Age: 21, Game: "Basketball"},
 
-	players, err := ph.service.GetAllPlayer()
+	players, err := ph.service.GetAllPlayers()
 	if err != nil {
 		writeResponse(w, err.Code, err.AsMessage())
 	} else {
@@ -53,7 +53,7 @@ func (ph *PlayerHandlers) GetPlayer(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["player_id"]
 
-	player, err := ph.service.GetPlayer(id)
+	player, err := ph.service.GetPlayerByID(id)
 	if err != nil {
 		// w.WriteHeader(err.Code)
 		// fmt.Fprintf(w, err.Message)

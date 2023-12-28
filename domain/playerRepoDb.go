@@ -78,26 +78,29 @@ func (d PlayerRepositoryDB) ById(id string) (*Player, *errorCust.AppError) {
 	return &p, nil
 }
 
-// ! connect to mySQL database with godotenv file
+// ! NewPlayerRepositoryDb creates a new instance of PlayerRepositoryDB
+// and connects to a MySQL database using environment variables loaded from a .env file.
 func NewPlayerRepositoryDb() *PlayerRepositoryDB {
-	err := godotenv.Load()
-	if err != nil {
+	// Load environment variables from .env file
+	if err := godotenv.Load(); err != nil {
 		log.Fatal("Error loading .env file")
 	}
 
+	// Retrieve database connection details from environment variables
 	dbUser := os.Getenv("DB_USER")
 	dbPassword := os.Getenv("DB_PASSWORD")
 	dbHost := os.Getenv("DB_HOST")
 	dbPort := os.Getenv("DB_PORT")
 	dbName := os.Getenv("DB_NAME")
 
+	// Construct the data source name for the MySQL connection
 	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUser, dbPassword, dbHost, dbPort, dbName)
 
+	// Open a connection to the MySQL database
 	client, err := sqlx.Open("mysql", dataSourceName)
 	if err != nil {
 		log.Fatal("Error connecting to the database: ", err.Error())
 		return nil
-
 	}
 
 	// Set connection pool settings.
@@ -105,5 +108,6 @@ func NewPlayerRepositoryDb() *PlayerRepositoryDB {
 	client.SetMaxOpenConns(10)
 	client.SetMaxIdleConns(10)
 
+	// Return the PlayerRepositoryDB instance with the connected database client
 	return &PlayerRepositoryDB{client}
 }
