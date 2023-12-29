@@ -4,20 +4,29 @@ package domain
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
-	"os"
-	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmechavez/gotest2023/errorCust"
 	"github.com/jmechavez/gotest2023/logger"
 	"github.com/jmoiron/sqlx"
-	"github.com/joho/godotenv"
 )
 
 type PlayerRepositoryDB struct {
 	client *sqlx.DB
+}
+
+// Save implements AccountRepository.
+// func (*PlayerRepositoryDB) Save(Account) (*Account, *errorCust.AppError) {
+// 	panic("unimplemented")
+// }
+
+func (repo *PlayerRepositoryDB) Save(account Account) (*Account, *errorCust.AppError) {
+	// Your implementation to save the account in the database goes here
+	// ...
+
+	// Return the saved account and no error for simplicity
+	return &account, nil
 }
 
 // ById implements PlayerRepository.
@@ -80,34 +89,8 @@ func (d PlayerRepositoryDB) ById(id string) (*Player, *errorCust.AppError) {
 
 // ! NewPlayerRepositoryDb creates a new instance of PlayerRepositoryDB
 // and connects to a MySQL database using environment variables loaded from a .env file.
-func NewPlayerRepositoryDb() *PlayerRepositoryDB {
-	// Load environment variables from .env file
-	if err := godotenv.Load(); err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
-	// Retrieve database connection details from environment variables
-	dbUser := os.Getenv("DB_USER")
-	dbPassword := os.Getenv("DB_PASSWORD")
-	dbHost := os.Getenv("DB_HOST")
-	dbPort := os.Getenv("DB_PORT")
-	dbName := os.Getenv("DB_NAME")
-
-	// Construct the data source name for the MySQL connection
-	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUser, dbPassword, dbHost, dbPort, dbName)
-
-	// Open a connection to the MySQL database
-	client, err := sqlx.Open("mysql", dataSourceName)
-	if err != nil {
-		log.Fatal("Error connecting to the database: ", err.Error())
-		return nil
-	}
-
-	// Set connection pool settings.
-	client.SetConnMaxLifetime(time.Minute * 3)
-	client.SetMaxOpenConns(10)
-	client.SetMaxIdleConns(10)
+func NewPlayerRepositoryDb(dbClient *sqlx.DB) *PlayerRepositoryDB {
 
 	// Return the PlayerRepositoryDB instance with the connected database client
-	return &PlayerRepositoryDB{client}
+	return &PlayerRepositoryDB{dbClient}
 }

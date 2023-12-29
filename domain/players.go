@@ -1,15 +1,37 @@
-// players/player.go
 package domain
 
-import "github.com/jmechavez/gotest2023/errorCust"
+import (
+	"github.com/jmechavez/gotest2023/dto"
+	"github.com/jmechavez/gotest2023/errorCust"
+)
 
 // Player represents a player in the system.
 type Player struct {
-	Id     string `json:"player_id" xml:"id" db:"player_id"`
-	Name   string `json:"full_name" xml:"name"`
-	Age    int    `json:"age" xml:"age"`
-	Game   string `json:"game" xml:"game"`
-	Status string `json:"status" xml:"status"`
+	PlayerId string `db:"player_id"`
+	Name     string
+	Age      int
+	Game     string
+	Status   string
+}
+
+// statusAsText converts the numeric status to a human-readable text.
+func (p Player) statusAsText() string {
+	statusAsText := "active"
+	if p.Status == "0" {
+		statusAsText = "inactive"
+	}
+	return statusAsText
+}
+
+// Todto converts Player to PlayerResponse DTO.
+func (p Player) Todto() dto.PlayerResponse {
+	return dto.PlayerResponse{
+		PlayerId: p.PlayerId,
+		Name:     p.Name,
+		Age:      p.Age,
+		Game:     p.Game,
+		Status:   p.statusAsText(),
+	}
 }
 
 // PlayerRepository defines the interface for interacting with player data.
